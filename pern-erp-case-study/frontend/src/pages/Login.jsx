@@ -36,8 +36,10 @@ export default function Login() {
 
   return (
     <section className="card login-card">
-      <h1>IndustraFlow</h1>
-      <p className="muted">Industrial ERP - sign in to continue</p>
+      <div className="login-brand"><span className="brand-mark large">SF</span><span><strong>StockFlow</strong><small>ERP OPERATIONS</small></span></div>
+      <p className="eyebrow">Industrial operations platform</p>
+      <h1>Move every order forward.</h1>
+      <p className="muted">One workspace for demand, pricing, inventory and dispatch.</p>
       <form onSubmit={handleSubmit}>
         <label>
           Email

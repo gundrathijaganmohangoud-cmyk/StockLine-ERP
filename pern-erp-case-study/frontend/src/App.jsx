@@ -6,6 +6,10 @@ import Login from './pages/Login';
 import Enquiries from './pages/Enquiries';
 import Quotations from './pages/Quotations';
 import SalesOrders from './pages/SalesOrders';
+import Dashboard from './pages/Dashboard';
+import AdminWorkspace from './pages/AdminWorkspace';
+import SalesWorkspace from './pages/SalesWorkspace';
+import About from './pages/About';
 
 function App() {
   return (
@@ -15,6 +19,22 @@ function App() {
         <main className="container">
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route
+              path="/dashboard"
+              element={<ProtectedRoute><Dashboard /></ProtectedRoute>}
+            />
+            <Route
+              path="/admin"
+              element={<ProtectedRoute requiredRole="ADMIN"><AdminWorkspace /></ProtectedRoute>}
+            />
+            <Route
+              path="/sales"
+              element={<ProtectedRoute requiredRole="SALES"><SalesWorkspace /></ProtectedRoute>}
+            />
+            <Route
+              path="/about"
+              element={<ProtectedRoute><About /></ProtectedRoute>}
+            />
             <Route
               path="/enquiries"
               element={
@@ -39,7 +59,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="*" element={<Navigate to="/enquiries" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </main>
       </BrowserRouter>

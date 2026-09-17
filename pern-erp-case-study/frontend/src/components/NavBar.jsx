@@ -12,13 +12,20 @@ export default function NavBar() {
 
   return (
     <header className="topbar">
-      <span className="brand">IndustraFlow</span>
+      <button type="button" className="brand brand-button" onClick={() => navigate('/dashboard')}>
+        <span className="brand-mark">SF</span>
+        <span><strong>StockFlow</strong><small>ERP OPERATIONS</small></span>
+      </button>
       {isAuthenticated && (
         <>
           <nav className="nav-links">
+            <NavLink to="/dashboard">Overview</NavLink>
+            {user && user.role === 'ADMIN' && <NavLink to="/admin">Admin desk</NavLink>}
+            {user && user.role === 'SALES' && <NavLink to="/sales">Sales desk</NavLink>}
             <NavLink to="/enquiries">Enquiries</NavLink>
             <NavLink to="/quotations">Quotations</NavLink>
             <NavLink to="/sales-orders">Sales Orders</NavLink>
+            <NavLink to="/about">About</NavLink>
           </nav>
           <div className="topbar-right">
             <span className="user-email">{user ? user.email : ''}</span>
