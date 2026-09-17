@@ -145,11 +145,12 @@ enum QuotationStatus {
   REJECTED
 }
 
-// enquiry_id is unique: one enquiry -> one active quotation in this flow.
+// One non-rejected quotation per enquiry is enforced by the partial database
+// index quotations_one_active_per_enquiry in the migration SQL.
 model Quotation {
   id              Int             @id @default(autoincrement())
   quotationNumber String          @unique @map("quotation_number")
-  enquiryId       Int             @unique @map("enquiry_id")
+  enquiryId       Int             @map("enquiry_id")
   customerId      Int             @map("customer_id")
   status          QuotationStatus @default(DRAFT)
   validUntil      DateTime?       @map("valid_until") @db.Date

@@ -23,14 +23,5 @@ module.exports = async function globalSetup() {
 
   execSync('npx prisma generate', { cwd: backendDir, env: env, stdio: 'inherit' });
 
-  try {
-    execSync('npx prisma migrate deploy', { cwd: backendDir, env: env, stdio: 'inherit' });
-  } catch (err) {
-    console.warn('prisma migrate deploy failed (no migrations yet?); falling back to prisma db push');
-    execSync('npx prisma db push --accept-data-loss --skip-generate', {
-      cwd: backendDir,
-      env: env,
-      stdio: 'inherit',
-    });
-  }
+  execSync('npx prisma migrate deploy', { cwd: backendDir, env: env, stdio: 'inherit' });
 };

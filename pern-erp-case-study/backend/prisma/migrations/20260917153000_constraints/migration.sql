@@ -1,12 +1,4 @@
--- IndustraFlow: CHECK constraints Prisma cannot express in the schema.
--- HOW TO APPLY:
---   Preferred: paste these statements at the bottom of the generated file
---   backend/prisma/migrations/<timestamp>_init/migration.sql BEFORE running
---   "npx prisma migrate dev" (or re-run migrate dev after editing) so they
---   become part of the migration history.
---   Alternative: apply directly with:
---     psql "$DATABASE_URL" -f backend/prisma/check-constraints.sql
-
+-- Database-level invariants not expressible in Prisma schema.
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'inventory_physical_qty_nonnegative') THEN
@@ -22,3 +14,8 @@ BEGIN
     ALTER TABLE inventory ADD CONSTRAINT inventory_reserved_plus_damaged_le_physical CHECK (reserved_qty + damaged_qty <= physical_qty);
   END IF;
 END $$;
+
+DROP INDEX IF EXISTS quotations_enquiry_id_key;
+CREATE UNIQUE INDEX IF NOT EXISTS quotations_one_active_per_enquiry
+  ON quotations (enquiry_id)
+  WHERE status != 'REJECTED';
