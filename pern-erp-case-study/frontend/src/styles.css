@@ -1,0 +1,330 @@
+:root {
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --border: #dde3e9;
+  --text: #1f2933;
+  --muted: #6b7580;
+  --primary: #1f5eff;
+  --primary-dark: #1748c2;
+  --danger: #c62828;
+  --success: #1b7f4c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+
+/* Top bar */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: #1c2733;
+  color: #fff;
+  padding: 10px 20px;
+}
+
+.topbar .brand {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-links a {
+  color: #cfd8e3;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.nav-links a.active {
+  background: #2c3b4d;
+  color: #fff;
+}
+
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-email {
+  color: #cfd8e3;
+  font-size: 0.85rem;
+}
+
+/* Cards, headers, banners */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  margin: 16px 0;
+}
+
+.login-card {
+  max-width: 420px;
+  margin: 60px auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px 0 16px;
+}
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.banner {
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin: 10px 0;
+  font-size: 0.92rem;
+}
+
+.banner.error {
+  background: #fdecea;
+  color: var(--danger);
+  border: 1px solid #f5c6c0;
+}
+
+.banner.success {
+  background: #e8f5ee;
+  color: var(--success);
+  border: 1px solid #bfe3cf;
+}
+
+/* Forms */
+form label,
+.form-grid label,
+.inline-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.form-grid .span-2 {
+  grid-column: span 2;
+}
+
+input,
+select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background: #fff;
+  color: var(--text);
+  min-width: 0;
+}
+
+input:disabled,
+select:disabled {
+  background: #eef1f4;
+  color: var(--muted);
+}
+
+.form-actions {
+  margin-top: 14px;
+}
+
+/* Buttons */
+.btn {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.btn:hover {
+  background: #f2f5f8;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn-small {
+  padding: 5px 10px;
+  font-size: 0.82rem;
+}
+
+.btn-accept {
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.btn-reject {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* Tables */
+.data-table,
+.line-items {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 12px 0;
+}
+
+.data-table th,
+.data-table td,
+.line-items th,
+.line-items td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.data-table th,
+.line-items th {
+  background: #eef2f6;
+  font-weight: 600;
+}
+
+.data-table tr.expanded td {
+  background: #f7fafd;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.convert-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.convert-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.detail-note {
+  margin-top: 14px;
+}
+
+.total-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.status-new,
+.status-draft,
+.status-pending {
+  background: #e8f0fe;
+  color: #1a4fc4;
+}
+
+.status-quoted,
+.status-sent {
+  background: #fff4e0;
+  color: #9a6b00;
+}
+
+.status-accepted,
+.status-confirmed,
+.status-won {
+  background: #e6f5ec;
+  color: var(--success);
+}
+
+.status-rejected,
+.status-cancelled,
+.status-lost {
+  background: #fdecea;
+  color: var(--danger);
+}
+
+.status-dispatched {
+  background: #e0f4f8;
+  color: #0d6a80;
+}
+
+.badge.role-admin {
+  background: #2c3b4d;
+  color: #fff;
+}
+
+.badge.role-sales {
+  background: #e8f0fe;
+  color: #1a4fc4;
+}
+
+/* Utilities */
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: 0.8rem;
+}
