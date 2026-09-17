@@ -117,7 +117,7 @@ model Enquiry {
   customer      Customer      @relation(fields: [customerId], references: [id])
   createdByUser User          @relation("EnquiryCreatedBy", fields: [createdBy], references: [id])
   items         EnquiryItem[]
-  quotation     Quotation?
+  quotations    Quotation[]
 
   @@map("enquiries")
 }
