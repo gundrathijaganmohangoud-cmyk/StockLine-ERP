@@ -18,7 +18,7 @@ app.use(express.json());
 app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
-    service: 'industraflow-api',
+    service: 'stockflow-api',
     time: new Date().toISOString(),
   });
 });

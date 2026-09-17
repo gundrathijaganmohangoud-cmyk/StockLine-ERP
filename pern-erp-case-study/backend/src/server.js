@@ -16,6 +16,6 @@ if (missing.length > 0) {
 const port = Number(process.env.PORT) || 5000;
 
 app.listen(port, function () {
-  console.log('IndustraFlow API listening on port ' + port);
+  console.log('StockFlow ERP API listening on port ' + port);
 });
 

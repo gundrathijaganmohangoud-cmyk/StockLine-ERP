@@ -1,6 +1,6 @@
-# PERN ERP Case Study - IndustraFlow
+# StockFlow ERP
 
-Full-stack ERP demo: **PostgreSQL + Express 5 + Prisma 6 + Node 22 (backend)** and **Vite + React 19 + react-router 7 (frontend)**.
+Full-stack ERP workspace: **PostgreSQL + Express 5 + Prisma 6 + Node 22 (backend)** and **Vite + React 19 + react-router 7 (frontend)**.
 
 Flow: Enquiry -> Quotation (server-authoritative pricing) -> Sales Order (ACCEPTED quotations only) -> Confirm (inventory reservation) -> Dispatch.
 
@@ -64,6 +64,8 @@ cd frontend && npm install && npm run dev
 ```
 
 Health check (public): `GET http://localhost:5000/api/health`
+
+The complete route-by-route responsibility guide is in `docs/API_ROUTE_GUIDE.md`.
 
 ## Running Tests
 
