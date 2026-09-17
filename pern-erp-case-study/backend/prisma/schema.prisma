@@ -1,0 +1,265 @@
+// IndustraFlow (PERN ERP) — Prisma schema
+// PostgreSQL. All money as Decimal. Unique constraints are the last line of
+// defense for one-to-one business flows (see comments on each unique field).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  SALES
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         Role     @default(SALES)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  createdEnquiries  Enquiry[]   @relation("EnquiryCreatedBy")
+  createdQuotations Quotation[] @relation("QuotationCreatedBy")
+
+  @@map("users")
+}
+
+model Customer {
+  id            Int      @id @default(autoincrement())
+  companyName   String   @map("company_name")
+  contactPerson String   @map("contact_person")
+  mobile        String
+  email         String?
+  city          String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  enquiries   Enquiry[]
+  quotations  Quotation[]
+  salesOrders SalesOrder[]
+
+  @@map("customers")
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  productCode String   @unique @map("product_code")
+  productName String   @map("product_name")
+  category    String
+  unit        String
+  basePrice   Decimal  @map("base_price") @db.Decimal(12, 2)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  inventory       Inventory?
+  enquiryItems    EnquiryItem[]
+  quotationItems  QuotationItem[]
+  salesOrderItems SalesOrderItem[]
+  dispatchItems   DispatchItem[]
+
+  @@map("products")
+}
+
+// 1:1 with Product (product_id unique). CHECK constraints added via raw SQL:
+//   physical_qty >= 0, reserved_qty >= 0, damaged_qty >= 0,
+//   reserved_qty + damaged_qty <= physical_qty
+model Inventory {
+  id          Int     @id @default(autoincrement())
+  productId   Int     @unique @map("product_id")
+  physicalQty Int     @default(0) @map("physical_qty")
+  reservedQty Int     @default(0) @map("reserved_qty")
+  damagedQty  Int     @default(0) @map("damaged_qty")
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("inventory")
+}
+
+// Document numbering (atomic ENQ-0001/QTN-0001/SO-0001/DSP-0001). Not an ER
+// entity: exists so number generation happens inside the creating transaction
+// via UPDATE ... RETURNING, race-safe without sequence/padding awkwardness.
+model DocumentCounter {
+  id         Int    @id @default(autoincrement())
+  docType    String @unique @map("doc_type")
+  lastNumber Int    @default(0) @map("last_number")
+
+  @@map("document_counters")
+}
+
+// ---------------------------------------------------------------------------
+// Enquiries
+// ---------------------------------------------------------------------------
+enum EnquiryStatus {
+  NEW
+  QUOTED
+  WON
+  LOST
+}
+
+model Enquiry {
+  id            Int           @id @default(autoincrement())
+  enquiryNumber String        @unique @map("enquiry_number")
+  customerId    Int           @map("customer_id")
+  enquiryDate   DateTime      @map("enquiry_date") @db.Date
+  requiredDate  DateTime?     @map("required_date") @db.Date
+  status        EnquiryStatus @default(NEW)
+  notes         String?
+  createdBy     Int           @map("created_by")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  createdByUser User          @relation("EnquiryCreatedBy", fields: [createdBy], references: [id])
+  items         EnquiryItem[]
+  quotation     Quotation?
+
+  @@map("enquiries")
+}
+
+model EnquiryItem {
+  id        Int @id @default(autoincrement())
+  enquiryId Int @map("enquiry_id")
+  productId Int @map("product_id")
+  quantity  Int
+
+  enquiry Enquiry @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([enquiryId])
+  @@map("enquiry_items")
+}
+
+// ---------------------------------------------------------------------------
+// Quotations
+// ---------------------------------------------------------------------------
+enum QuotationStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+}
+
+// enquiry_id is unique: one enquiry -> one active quotation in this flow.
+model Quotation {
+  id              Int             @id @default(autoincrement())
+  quotationNumber String          @unique @map("quotation_number")
+  enquiryId       Int             @unique @map("enquiry_id")
+  customerId      Int             @map("customer_id")
+  status          QuotationStatus @default(DRAFT)
+  validUntil      DateTime?       @map("valid_until") @db.Date
+  grandTotal      Decimal         @map("grand_total") @db.Decimal(14, 2)
+  createdBy       Int             @map("created_by")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  enquiry       Enquiry         @relation(fields: [enquiryId], references: [id])
+  customer      Customer        @relation(fields: [customerId], references: [id])
+  createdByUser User            @relation("QuotationCreatedBy", fields: [createdBy], references: [id])
+  items         QuotationItem[]
+  salesOrder    SalesOrder?
+
+  @@map("quotations")
+}
+
+model QuotationItem {
+  id          Int     @id @default(autoincrement())
+  quotationId Int     @map("quotation_id")
+  productId   Int     @map("product_id")
+  quantity    Int
+  unitPrice   Decimal @map("unit_price") @db.Decimal(12, 2)
+  discountPct Decimal @map("discount_pct") @db.Decimal(5, 2)
+  gstPct      Decimal @map("gst_pct") @db.Decimal(5, 2)
+  lineAmount  Decimal @map("line_amount") @db.Decimal(14, 2)
+
+  quotation Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  product   Product   @relation(fields: [productId], references: [id])
+
+  @@index([quotationId])
+  @@map("quotation_items")
+}
+
+// ---------------------------------------------------------------------------
+// Sales orders
+// ---------------------------------------------------------------------------
+enum SalesOrderStatus {
+  PENDING
+  CONFIRMED
+  DISPATCHED
+  CANCELLED
+}
+
+// quotation_id UNIQUE is the critical constraint: a quotation can convert to
+// at most one sales order, enforced by the database even under concurrency.
+model SalesOrder {
+  id          Int              @id @default(autoincrement())
+  orderNumber String           @unique @map("order_number")
+  quotationId Int              @unique @map("quotation_id")
+  customerId  Int              @map("customer_id")
+  orderDate   DateTime         @map("order_date") @db.Date
+  status      SalesOrderStatus @default(PENDING)
+  totalAmount Decimal          @map("total_amount") @db.Decimal(14, 2)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  quotation  Quotation        @relation(fields: [quotationId], references: [id])
+  customer   Customer         @relation(fields: [customerId], references: [id])
+  items      SalesOrderItem[]
+  dispatches Dispatch[]
+
+  @@map("sales_orders")
+}
+
+model SalesOrderItem {
+  id           Int     @id @default(autoincrement())
+  salesOrderId Int     @map("sales_order_id")
+  productId    Int     @map("product_id")
+  quantity     Int
+  unitPrice    Decimal @map("unit_price") @db.Decimal(12, 2)
+
+  salesOrder SalesOrder @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+  product    Product    @relation(fields: [productId], references: [id])
+
+  @@index([salesOrderId])
+  @@map("sales_order_items")
+}
+
+// ---------------------------------------------------------------------------
+// Dispatches
+// ---------------------------------------------------------------------------
+model Dispatch {
+  id             Int      @id @default(autoincrement())
+  dispatchNumber String   @unique @map("dispatch_number")
+  salesOrderId   Int      @map("sales_order_id")
+  dispatchDate   DateTime @map("dispatch_date") @db.Date
+  vehicleNumber  String   @map("vehicle_number")
+  driverName     String   @map("driver_name")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  salesOrder SalesOrder     @relation(fields: [salesOrderId], references: [id])
+  items      DispatchItem[]
+
+  @@map("dispatches")
+}
+
+model DispatchItem {
+  id         Int @id @default(autoincrement())
+  dispatchId Int @map("dispatch_id")
+  productId  Int @map("product_id")
+  quantity   Int
+
+  dispatch Dispatch @relation(fields: [dispatchId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id])
+
+  @@index([dispatchId])
+  @@map("dispatch_items")
+}
+
+
+
