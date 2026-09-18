@@ -78,8 +78,9 @@ For the Vercel project, set:
 
 - `VITE_API_URL`: the deployed Render API URL followed by `/api`
 
-The API runs `npx prisma migrate deploy` before starting. Do not use
-`prisma migrate dev` against the production Neon database.
+The API verifies its database constraints, baselines the existing constraints
+migration when necessary, and then runs `npx prisma migrate deploy` before
+starting. Do not use `prisma migrate dev` against the production Neon database.
 
 Health check (public): `GET http://localhost:5000/api/health`
 
