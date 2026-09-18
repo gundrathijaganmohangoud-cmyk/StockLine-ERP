@@ -63,26 +63,49 @@ cd backend && npm run dev
 cd frontend && npm install && npm run dev
 ```
 
-## Deploying with Vercel, Render, and Neon
+## Deployment
 
-The repository includes `render.yaml` for deploying the API. Deploy the
-`frontend` directory as a Vercel project. Vercel will use `vercel.json` to
-serve the React application correctly for client-side routes.
+The application is successfully deployed with this production architecture:
 
-For the Render API, configure these values:
+```text
+Vercel frontend -> Render Express API -> Neon PostgreSQL
+```
 
-- `DATABASE_URL`: the pooled Neon PostgreSQL connection string
-- `CORS_ORIGIN`: the deployed Vercel frontend URL
+- Frontend: https://stock-line-erp.vercel.app
+- Backend API: https://stockline-erp-ptfs.onrender.com
+- Backend health check: https://stockline-erp-ptfs.onrender.com/api/health
 
-For the Vercel project, set:
+The health check should return `status: "ok"` when the API is available.
 
-- `VITE_API_URL`: the deployed Render API URL followed by `/api`
+### Vercel frontend
+
+Deploy the `frontend` directory as a Vercel project. Vercel uses
+`frontend/vercel.json` to serve the React application correctly for
+client-side routes.
+
+Set this Vercel environment variable:
+
+```env
+VITE_API_URL=https://stockline-erp-ptfs.onrender.com/api
+```
+
+### Render backend
+
+The repository includes `render.yaml` for the Render API service. Configure
+these Render environment variables:
+
+```env
+DATABASE_URL=your-Neon-pooled-connection-string
+JWT_SECRET=your-production-secret
+CORS_ORIGIN=https://stock-line-erp.vercel.app
+NODE_ENV=production
+```
 
 The API verifies its database constraints, baselines the existing constraints
 migration when necessary, and then runs `npx prisma migrate deploy` before
 starting. Do not use `prisma migrate dev` against the production Neon database.
 
-Health check (public): `GET http://localhost:5000/api/health`
+For local development, the health check is `GET http://localhost:5000/api/health`.
 
 The complete route-by-route responsibility guide is in `docs/API_ROUTE_GUIDE.md`.
 
