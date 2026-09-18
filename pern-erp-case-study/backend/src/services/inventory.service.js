@@ -32,7 +32,7 @@ const { httpError } = require('../utils/apiResponse');
 async function reserveStock(tx, productId, quantity) {
   const affected = await tx.$executeRaw`
     UPDATE inventory
-       SET reserved_qty = reserved_qty + ${quantity}, updated_at = CURRENT_TIMESTAMP
+       SET reserved_qty = reserved_qty + ${quantity}
      WHERE product_id = ${productId}
        AND physical_qty - reserved_qty - damaged_qty >= ${quantity}`;
   return affected > 0;
@@ -44,8 +44,7 @@ async function deductDispatchedStock(tx, productId, quantity) {
   const affected = await tx.$executeRaw`
     UPDATE inventory
        SET physical_qty = physical_qty - ${quantity},
-           reserved_qty = reserved_qty - ${quantity},
-           updated_at = CURRENT_TIMESTAMP
+         reserved_qty = reserved_qty - ${quantity}
      WHERE product_id = ${productId}
        AND physical_qty >= ${quantity}
        AND reserved_qty >= ${quantity}`;
