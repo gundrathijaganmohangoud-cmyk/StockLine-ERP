@@ -63,6 +63,18 @@ cd backend && npm run dev
 cd frontend && npm install && npm run dev
 ```
 
+## Deploying with Render and Neon
+
+The repository includes `render.yaml` for deploying the API and Vite frontend.
+Create a Render Blueprint from the repository, then configure these values:
+
+- `DATABASE_URL`: the pooled Neon PostgreSQL connection string
+- `CORS_ORIGIN`: the deployed frontend URL
+- `VITE_API_URL`: the deployed API URL followed by `/api`
+
+The API runs `npx prisma migrate deploy` before starting. Do not use
+`prisma migrate dev` against the production Neon database.
+
 Health check (public): `GET http://localhost:5000/api/health`
 
 The complete route-by-route responsibility guide is in `docs/API_ROUTE_GUIDE.md`.

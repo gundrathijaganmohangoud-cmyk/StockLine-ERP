@@ -11,7 +11,11 @@ const dispatchesRoutes = require('./routes/dispatches.routes');
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(function (origin) { return origin.trim(); })
+  : true;
+
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 // Public health check.
