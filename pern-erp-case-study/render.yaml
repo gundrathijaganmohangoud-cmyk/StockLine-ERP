@@ -15,13 +15,3 @@ services:
         generateValue: true
       - key: CORS_ORIGIN
         sync: false
-
-  - type: web
-    name: stockflow-frontend
-    runtime: static
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    envVars:
-      - key: VITE_API_URL
-        sync: false

@@ -63,14 +63,20 @@ cd backend && npm run dev
 cd frontend && npm install && npm run dev
 ```
 
-## Deploying with Render and Neon
+## Deploying with Vercel, Render, and Neon
 
-The repository includes `render.yaml` for deploying the API and Vite frontend.
-Create a Render Blueprint from the repository, then configure these values:
+The repository includes `render.yaml` for deploying the API. Deploy the
+`frontend` directory as a Vercel project. Vercel will use `vercel.json` to
+serve the React application correctly for client-side routes.
+
+For the Render API, configure these values:
 
 - `DATABASE_URL`: the pooled Neon PostgreSQL connection string
-- `CORS_ORIGIN`: the deployed frontend URL
-- `VITE_API_URL`: the deployed API URL followed by `/api`
+- `CORS_ORIGIN`: the deployed Vercel frontend URL
+
+For the Vercel project, set:
+
+- `VITE_API_URL`: the deployed Render API URL followed by `/api`
 
 The API runs `npx prisma migrate deploy` before starting. Do not use
 `prisma migrate dev` against the production Neon database.
